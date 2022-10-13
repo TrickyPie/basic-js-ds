@@ -88,58 +88,46 @@ class BinarySearchTree {
     this.rootTree = removeLeaf(this.rootTree, val);
 
     function removeLeaf(node, val) {
-      if (node === undefined || node === null) {
+
+      if (!node || node === null || node === undefined) {
         return null;
       }
 
-      //значение меньше
       if (val < node.data) {
         node.left = removeLeaf(node.left, val);
         return node;
-      }
-      //значение больше
-      else if (node.val < val) {
+
+      } else if (node.data < val) {
         node.right = removeLeaf(node.right, val);
         return node;
-      }
-      // равно узлу
-      else {
-        // тип лист?
+
+      } else {
         if (!node.left && !node.right) {
           return null;
         }
-        // нет левого потомка, только правый
+
         if (!node.left) {
           node = node.right;
           return node;
         }
-        // нет правого потомка, только левый
+
         if (!node.right) {
           node = node.left;
           return node;
         }
 
-        // епрст, два потомка
-        if (node.right && node.left) {
-
-          let littleRight = node.right;
-
-          while (littleRight.left != null) {
-            littleRight = littleRight.left;
-          }
-
-          node.data = littleRight.val;
-
-          node.right = removeLeaf(node.right, littleRight.val);
-
-          return node;
-
+        let littleBrotherRight = node.right;
+        while (littleBrotherRight.left) {
+          littleBrotherRight = littleBrotherRight.left;
         }
+        node.data = littleBrotherRight.data;
+
+        node.right = removeLeaf(node.right, littleBrotherRight.data);
+
+        return node;
       }
     }
   }
-
-
 
   min() {
     let node = this.rootTree;
