@@ -20,100 +20,151 @@ class BinarySearchTree {
     this.rootTree = addInto(this.rootTree, val);
 
     function addInto(node, val) {
+
       if (!node) {
         return new Node(val);
       }
-      if (node.val === val) {
+
+      if (node.data === val) {
         return node;
       }
-      if (val < node.val) {
+
+      if (val < node.data) {
         node.left = addInto(node.left, val);
       } else {
         node.right = addInto(node.right, val);
       }
+
       return node;
+
     }
   }
 
   has(val) {
-    //шото ему тут не нравится
     return search(this.rootTree, val);
 
     function search(node, val) {
-      if (!node) {
+
+      if (node === undefined || node === null) {
         return false;
       }
 
-      if (node.val === val) {
+      if (node.data === val) {
         return true;
       }
 
-      if (val < node.val) {
-        return search(node.left, val)
-      } else {
-        return search(node.right, val)
+      let leftSearch = search(node.left, val);
+      if (leftSearch) {
+        return true;
       }
+
+      let rightSearch = search(node.right, val);
+      return rightSearch;
     }
   }
 
-  find(/* data */) {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
-  }
+  find(val) {
 
-  remove(val) {
-    this.rootTree = removeNode(this.rootTree, val);
+    return searchLeaf(this.rootTree, val);
 
-    function removeNode(node, val) {
-      if (!node) {
+    function searchLeaf(node, val) {
+
+      if (node === undefined || node === null) {
         return null;
       }
 
-      if (val < node.val) {
-        node.left = removeNode(node.left, val);
+      if (node.data === val) {
         return node;
-      } else if (val > node.val) {
-        node.right = removeNode(node.right, val);
+      }
+
+      return node.data > val ?
+        searchLeaf(node.left, val) :
+        searchLeaf(node.right, val)
+
+    }
+  }
+
+  remove(val) {
+    this.rootTree = removeLeaf(this.rootTree, val);
+
+    function removeLeaf(node, val) {
+      if (node === undefined || node === null) {
+        return null;
+      }
+
+      //значение меньше
+      if (val < node.data) {
+        node.left = removeLeaf(node.left, val);
         return node;
-      } else {
+      }
+      //значение больше
+      else if (node.val < val) {
+        node.right = removeLeaf(node.right, val);
+        return node;
+      }
+      // равно узлу
+      else {
+        // тип лист?
         if (!node.left && !node.right) {
           return null;
         }
+        // нет левого потомка, только правый
         if (!node.left) {
           node = node.right;
           return node;
         }
+        // нет правого потомка, только левый
         if (!node.right) {
           node = node.left;
           return node;
         }
 
-        let minRight = node.right;
-        while (minRight.left) {
-          minRight = minRight.left;
+        // епрст, два потомка
+        if (node.right && node.left) {
+
+          let littleRight = node.right;
+
+          while (littleRight.left != null) {
+            littleRight = littleRight.left;
+          }
+
+          node.data = littleRight.val;
+
+          node.right = removeLeaf(node.right, littleRight.val);
+
+          return node;
+
         }
-        node.val = minRight.left;
-        node.right = removeNode(node.right, minRight);
-        return node;
       }
     }
   }
 
-  min() {
-    if (!this.rootTree) {
-      return "undefined";
-    }
 
+
+  min() {
     let node = this.rootTree;
-    while (node.left) {
-      node = node.left;
+    if (node === undefined || node === null) {
+      return null;
+    } else {
+      let currentVal = node;
+      while (currentVal.left != null) {
+        currentVal = currentVal.left;
+      }
+      return currentVal.data;
     }
-    return node.val;
   }
 
   max() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+    let node = this.rootTree;
+    if (node === undefined || node === null) {
+      return null;
+    } else {
+      let currentVal = node;
+      while (currentVal.right != null) {
+        currentVal = currentVal.right;
+      }
+      return currentVal.data;
+    }
   }
 }
 
